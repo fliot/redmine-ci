@@ -8,6 +8,12 @@ A redmine docker distribution, ready to serve in continuous integration workflow
   - /path segregation, to easly be used behind reverse proxy/https wrapper
   - Backup-Restore process
 
+# URL map
+| Path | Description |
+| ------ | ------ |
+| /redmine | Redmine application |
+| /git | Git repositories |
+
 # Plugins
 | Plugin | Description |
 | ------ | ------ |
@@ -15,6 +21,7 @@ A redmine docker distribution, ready to serve in continuous integration workflow
 | Drawio | [https://github.com/mikitex70/redmine_drawio] |
 | Mindmap | [https://www.redmine.org/plugins/mindmap-plugin] |
 | Custom Workflows | [http://www.redmine.org/plugins/custom-workflows] |
+| Jenkins | [https://github.com/jbox-web/redmine_jenkins] |
 
 # Themes
 | Theme | Description |
@@ -23,25 +30,25 @@ A redmine docker distribution, ready to serve in continuous integration workflow
 | Circle | [https://www.redmineup.com/pages/themes/circle] |
 
 # Build, Install
-Build the docker image
+Edit config.sh variables, and build the docker image
 ```sh
 $ docker build -t redmine-ci .
 ```
 
-Install and run it
+Create persistant storave volume
 ```sh
 $ docker volume create redmine-ci_data
+```
+
+Install and run it
+```sh
 $ docker run -d -p 8080:80 -v /var/run/docker.sock:/var/run/docker.sock -v redmine-ci_data:/data redmine-ci
 ```
 
 # TODO
-- filesystem segregation (mysql/redmine->docker)
-- clean passenger startup
 - backup restore scripting
 - rails rotation logs
 - local git repositories
 - web access of local git repositories (with redmine authentication)
-- plugin redmine git
-- plugin custom form fields
-- plugin redmine jenkins
+- plugin redmine git (configuration)
 - jenkins installation
