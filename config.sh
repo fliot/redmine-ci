@@ -91,14 +91,27 @@ else
     echo "# redmine database and volume will be initialized ##############################"
     echo "################################################################################"
 
-    # prepare volumes
+    # pipe working paths to docker volume
     mkdir /data
+    
     mv /var/lib/mysql                         /data/mysql
     sed -i 's!/var/lib/mysql!/data/mysql!g' /etc/mysql/mysql.conf.d/mysqld.cnf
-    mv /opt/redmine/public/plugin_assets      /data/redmine_public_plugin_assets
-    ln -s /data/redmine_public_plugin_assets  /opt/redmine/public/plugin_assets
+
+    mv /opt/redmine/config                    /data/redmine_config
+    ln -s /data/redmine_config                /opt/redmine/config
+
     mv /opt/redmine/files                     /data/redmine_files
     ln -s /data/redmine_files                 /opt/redmine/files
+    
+    mv /opt/redmine/plugins                   /data/redmine_plugins
+    ln -s /data/redmine_plugins               /opt/redmine/plugins
+    
+    mv /opt/redmine/public/plugin_assets      /data/redmine_public_plugin_assets
+    ln -s /data/redmine_public_plugin_assets  /opt/redmine/public/plugin_assets
+
+    mv /opt/redmine/public/themes             /data/redmine_public_themes
+    ln -s /data/redmine_public_themes         /opt/redmine/public/themes
+    
     mkdir /data/git
     
     # mysql root reset password

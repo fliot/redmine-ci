@@ -49,6 +49,9 @@ RUN cd /opt/redmine && cd plugins && git clone https://github.com/martin-denizet
 # https://github.com/dergachev/redmine_git_remote
 RUN cd /opt/redmine && cd plugins && git clone https://github.com/dergachev/redmine_git_remote.git
 
+# https://www.redmineup.com/pages/plugins/agile
+RUN cd /opt/redmine && cd plugins && curl -o redmine_agile.zip "https://www.redmineup.com/license_manager/48678?token=1574a98792fc6342ac090f2f6c0f773dfa80c" && unzip redmine_agile.zip
+
 ############################################################################################################
 # redmine themes
 ############################################################################################################

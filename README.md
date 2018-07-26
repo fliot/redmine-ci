@@ -20,6 +20,7 @@ A redmine docker distribution, ready to serve in continuous integration workflow
 # Redmine Plugins
 | Plugin | Description |
 | ------ | ------ |
+| Agile | [https://www.redmineup.com/pages/plugins/agile] |
 | Custom Workflows | [http://www.redmine.org/plugins/custom-workflows] |
 | Drawio | [https://github.com/mikitex70/redmine_drawio] |
 | Git | [https://github.com/martin-denizet/redmine_create_git] |
