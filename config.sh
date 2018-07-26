@@ -6,17 +6,66 @@ export REDMINE_LANG=fr
 
 # apache configuration
 cd /etc/apache2/sites-enabled
-a2enmod proxy
-a2enmod proxy_http
+a2enmod alias cgid perl proxy proxy_http rewrite
+
 rm 000-default.conf
 echo """
 <VirtualHost *:80>
     ServerName server
     ServerAlias www.server
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
+    
+    RewriteEngine on
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule (.*) /redmine/ [R=301]
+    
+    ProxyPass /images/ http://localhost:3000/images/
+    ProxyPassReverse /images/ http://localhost:3000/images/
+    
+    ProxyPass /javascripts/ http://localhost:3000/javascripts/
+    ProxyPassReverse /javascripts/ http://localhost:3000/javascripts/
+
+    ProxyPass /plugin_assets/ http://localhost:3000/plugin_assets/
+    ProxyPassReverse /plugin_assets/ http://localhost:3000/plugin_assets/
+
+    ProxyPass /redmine/ http://localhost:3000/redmine/
+    ProxyPassReverse /redmine/ http://localhost:3000/redmine/
+    
+    ProxyPass /stylesheets/ http://localhost:3000/stylesheets/
+    ProxyPassReverse /stylesheets/ http://localhost:3000/stylesheets/
+    
+    ProxyPass /themes/ http://localhost:3000/themes/
+    ProxyPassReverse /themes/ http://localhost:3000/themes/
+    
+    
+    SetEnv GIT_PROJECT_ROOT /data/git
+    SetEnv GIT_HTTP_EXPORT_ALL
+    ScriptAlias /git/ /usr/lib/git-core/git-http-backend/
+    
+    PerlLoadModule Apache::Redmine
+    
+
+    <Location /git>
+        Order allow,deny
+        Allow from all
+        
+        AuthType Basic
+        AuthName \"Git repositories\"
+        Require valid-user
+        AuthUserFile /dev/null
+        
+        PerlAccessHandler Apache::Authn::Redmine::access_handler
+        PerlAuthenHandler Apache::Authn::Redmine::authen_handler
+        
+        RedmineDSN \"DBI:mysql:database=redmine;host=localhost;mysql_socket=/var/run/mysqld/mysqld.sock\"
+        RedmineDbUser \"redmine\"
+        RedmineDbPass \"$MYSQL_REDMINE_PASSWORD\"
+        
+        #Enable Git Smart Http
+        RedmineGitSmartHttp yes
+    </Location>
+    
 </VirtualHost>
-""" > redmine.conf 
+""" > redmine.conf
 
 if [ -d "/data/mysql/redmine" ]; then
     #######################################################################################
@@ -50,6 +99,7 @@ else
     ln -s /data/redmine_public_plugin_assets  /opt/redmine/public/plugin_assets
     mv /opt/redmine/files                     /data/redmine_files
     ln -s /data/redmine_files                 /opt/redmine/files
+    mkdir /data/git
     
     # mysql root reset password
     mysqld_safe --skip-grant-tables &
@@ -80,6 +130,14 @@ production:
   encoding: utf8
 """ > config/database.yml
 
+    # redmine http prefix
+    sed -i "s:Rails.application.initialize!::g" config/environment.rb
+    echo """
+RedmineApp::Application.routes.default_scope = \"/redmine\" 
+# Initialize the Rails application
+Rails.application.initialize!
+""" >> config/environment.rb
+
     # redmine initialization
     gem install bundler
     cd /opt/redmine && bundle install --without development test
@@ -90,5 +148,27 @@ production:
     bundle exec rake db:migrate
     bundle exec rake redmine:load_default_data
     rake redmine:plugins:migrate
+
+    # redmine settings default
+    echo """TRUNCATE TABLE settings;
+INSERT INTO settings VALUES 
+(1,'ui_theme','circle','2018-07-26 18:58:57'),
+(2,'default_language','$REDMINE_LANG','2018-07-26 18:58:57'),
+(3,'force_default_language_for_anonymous','0','2018-07-26 18:58:57'),
+(4,'force_default_language_for_loggedin','0','2018-07-26 18:58:57'),
+(5,'start_of_week','','2018-07-26 18:58:57'),
+(6,'date_format','','2018-07-26 18:58:57'),
+(7,'time_format','','2018-07-26 18:58:57'),
+(8,'timespan_format','decimal','2018-07-26 18:58:57'),
+(9,'user_format','firstname_lastname','2018-07-26 18:58:57'),
+(10,'gravatar_enabled','0','2018-07-26 18:58:57'),
+(11,'gravatar_default','','2018-07-26 18:58:57'),
+(12,'thumbnails_enabled','0','2018-07-26 18:58:57'),
+(13,'thumbnails_size','100','2018-07-26 18:58:57'),
+(14,'new_item_menu_tab','2','2018-07-26 18:58:57'),
+(15,'plugin_redmine_create_git','---\nrepo_path: \"/data/git\"\ngitignore: \"# ignore all logs\\r\\n*.log\"\nbranches: \'\'\nrepo_url: http://localhost:8080/git/\n','2018-07-26 19:02:44'),
+(16,'rest_api_enabled','1','2018-07-26 19:05:24'),
+(17,'jsonp_enabled','0','2018-07-26 19:05:24');
+""" | mysql -u root --password=$MYSQL_ROOT_PASSWORD redmine
 
 fi

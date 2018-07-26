@@ -43,6 +43,9 @@ RUN cd /opt/redmine && cd plugins && git clone https://github.com/jbox-web/redmi
 RUN cd /opt/redmine && cd plugins && git clone https://github.com/jbox-web/redmine_jenkins.git
 RUN cd /opt/redmine && sed -i "s!gem 'jenkins_api_client', '~> 1.3.0'!gem 'jenkins_api_client', '~> 1.5.2'!g" plugins/redmine_jenkins/Gemfile
 
+# https://github.com/martin-denizet/redmine_create_git
+RUN cd /opt/redmine && cd plugins && git clone https://github.com/martin-denizet/redmine_create_git.git
+
 ############################################################################################################
 # redmine themes
 ############################################################################################################
@@ -51,11 +54,6 @@ RUN cd /opt/redmine && cd public/themes && git clone https://github.com/Nitrino/
 
 # https://www.redmineup.com/pages/themes/circle
 RUN cd /opt/redmine && cd public/themes && wget http://support.netinteractive.pl/themes/circle_theme-2_1_3.zip && unzip circle_theme-2_1_3.zip
-
-############################################################################################################
-# TODO : local git repoitories
-############################################################################################################
-# https://docs.bitnami.com/general/apps/redmine/#How_to_configure_Redmine_for_advanced_integration_with_Git
 
 ############################################################################################################
 # TODO : jenkins
@@ -70,7 +68,13 @@ RUN cd /opt/redmine && cd public/themes && wget http://support.netinteractive.pl
 ADD config.sh /opt
 RUN sh /opt/config.sh
 
+############################################################################################################
+# git with redmine authentication
+############################################################################################################
+RUN apt-get install -y libapache2-mod-perl2 libdbi-perl libdbd-mysql-perl
+RUN cp /opt/redmine-3.4.6/extra/svn/Redmine.pm /usr/lib/x86_64-linux-gnu/perl5/5.26/Apache/
 
+ADD git-init.sh /opt
 ADD script.sh /opt
 
 EXPOSE 80
