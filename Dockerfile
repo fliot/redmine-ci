@@ -46,6 +46,9 @@ RUN cd /opt/redmine && sed -i "s!gem 'jenkins_api_client', '~> 1.3.0'!gem 'jenki
 # https://github.com/martin-denizet/redmine_create_git
 RUN cd /opt/redmine && cd plugins && git clone https://github.com/martin-denizet/redmine_create_git.git
 
+# https://github.com/dergachev/redmine_git_remote
+RUN cd /opt/redmine && cd plugins && git clone https://github.com/dergachev/redmine_git_remote.git
+
 ############################################################################################################
 # redmine themes
 ############################################################################################################
@@ -63,16 +66,16 @@ RUN cd /opt/redmine && cd public/themes && wget http://support.netinteractive.pl
 # git clone https://github.com/jenkinsci/redmine-plugin.git
 
 ############################################################################################################
-# remine init
-############################################################################################################
-ADD config.sh /opt
-RUN sh /opt/config.sh
-
-############################################################################################################
 # git with redmine authentication
 ############################################################################################################
 RUN apt-get install -y libapache2-mod-perl2 libdbi-perl libdbd-mysql-perl
 RUN cp /opt/redmine-3.4.6/extra/svn/Redmine.pm /usr/lib/x86_64-linux-gnu/perl5/5.26/Apache/
+
+############################################################################################################
+# remine init
+############################################################################################################
+ADD config.sh /opt
+RUN sh /opt/config.sh
 
 ADD git-init.sh /opt
 ADD script.sh /opt

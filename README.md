@@ -20,18 +20,20 @@ A redmine docker distribution, ready to serve in continuous integration workflow
 # Redmine Plugins
 | Plugin | Description |
 | ------ | ------ |
-| Social Sign In | [https://github.com/easysoftware/redmine_social_sign_in] |
-| Drawio | [https://github.com/mikitex70/redmine_drawio] |
-| Mindmap | [https://www.redmine.org/plugins/mindmap-plugin] |
 | Custom Workflows | [http://www.redmine.org/plugins/custom-workflows] |
-| Jenkins | [https://github.com/jbox-web/redmine_jenkins] |
+| Drawio | [https://github.com/mikitex70/redmine_drawio] |
 | Git | [https://github.com/martin-denizet/redmine_create_git] |
+| Git Remote | [https://github.com/dergachev/redmine_git_remote] |
+| Jenkins | [https://github.com/jbox-web/redmine_jenkins] |
+| Mindmap | [https://www.redmine.org/plugins/mindmap-plugin] |
+| Social Sign In | [https://github.com/easysoftware/redmine_social_sign_in] |
+
 
 # Redmine Themes
 | Theme | Description |
 | ------ | ------ |
-| Flaty Light | [https://github.com/Nitrino/flatly_light_redmine] |
 | Circle | [https://www.redmineup.com/pages/themes/circle] |
+| Flaty Light | [https://github.com/Nitrino/flatly_light_redmine] |
 
 # Jenkins Plugins
 | Theme | Description |

@@ -24,9 +24,22 @@ else
     git add README.md
     git config --global user.email "nobody@nowhere.com"
     git config --global user.name "admin"
-    git commit -m "refs #1 : initializing the Git repository"
+    git commit -m "initializing the Git repository"
     git status
     git push
+    
+    echo """#!/usr/bin/env ruby
+message_file = ARGV[0]
+message = File.read(message_file)
+
+$regex = /(refs #(\d+)|fixes #(\d+))/
+
+if !$regex.match(message)
+  puts \"Your message is not formatted correctly (missing refs #XXX or fixes #XXX)\"
+  exit 1
+end
+""" >  /data/git/$REPO/hooks/commit-msg
+    chmod +x /data/git/$REPO/hooks/commit-msg
     
     echo ""
     echo "Local path (to configure to local redmine instance):"
